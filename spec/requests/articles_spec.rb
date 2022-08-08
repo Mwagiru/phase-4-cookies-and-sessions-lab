@@ -1,89 +1,41 @@
+
 require 'rails_helper'
 
-RSpec.describe "Articles", type: :request do
-  before do
-    user = User.create(username: 'author')
-    user.articles.create(title: 'Article 1', content: "Content 1\nparagraph 1", minutes_to_read: 10)
-    user.articles.create(title: 'Article 2', content: "Content 2\nparagraph 1", minutes_to_read: 10)
-  end
+# RSpec.describe "Sessions", type: :request do
+#   let!(:user) { User.create(username: 'author') }
 
-  describe "GET /articles" do
-    it 'returns an array of all articles' do
-      get '/articles'
+#   describe "POST /login" do
+#     it 'returns the logged in user' do
+#       post "/login", params: { username: user.username }
 
-      expect(response.body).to include_json([
-        { id: 2, title: 'Article 2', minutes_to_read: 10, author: 'author', preview: 'paragraph 1' },
-        { id: 1, title: 'Article 1', minutes_to_read: 10, author: 'author', preview: 'paragraph 1' }
-      ])
-    end
-  end
+#       expect(response.body).to include_json({ 
+#         id: user.id, username: user.username
+#       })
+#     end
 
-  describe "GET /articles/:id" do
-    context 'with one pageviews' do
-      it 'returns the correct article' do
-        get "/articles/#{Article.first.id}"
+#     it 'sets the user ID in the session' do
+#       post "/login", params: { username: user.username }
+
+#       expect(session[:user_id]).to eq(user.id)
+#     end
+#   end
   
-        expect(response.body).to include_json({ 
-          id: 1, title: 'Article 1', minutes_to_read: 10, author: 'author', content: "Content 1\nparagraph 1" 
-        })
-      end
+#   describe "DELETE /logout" do
+#     before do
+#       post "/login", params: { username: user.username }
+#     end
 
-      it 'uses the session to keep track of the number of page views' do
-        get "/articles/#{Article.first.id}"
-  
-        expect(session[:page_views]).to eq(1)
-      end
-    end
+#     it 'returns no content' do
+#       delete "/logout"
 
-    context 'with three pageviews' do
-      it 'returns the correct article' do
-        get "/articles/#{Article.first.id}"
-        get "/articles/#{Article.first.id}"
-        get "/articles/#{Article.first.id}"
+#       expect(response).to have_http_status(:no_content)
+#     end
 
-        expect(response.body).to include_json({ 
-          id: 1, title: 'Article 1', minutes_to_read: 10, author: 'author', content: "Content 1\nparagraph 1" 
-        })
-      end
+#     it 'deletes the user ID from the session' do
+#       delete "/logout"
 
-      it 'uses the session to keep track of the number of page views' do
-        get "/articles/#{Article.first.id}"
-        get "/articles/#{Article.first.id}"
-        get "/articles/#{Article.first.id}"
-  
-        expect(session[:page_views]).to eq(3)
-      end
-    end
+#       expect(session[:user_id]).to eq(nil)
+#     end
+#   end
 
-    context 'with more than three pageviews' do
-      it 'returns an error message' do
-        get "/articles/#{Article.first.id}"
-        get "/articles/#{Article.first.id}"
-        get "/articles/#{Article.first.id}"
-        get "/articles/#{Article.first.id}"
-
-        expect(response.body).to include_json({ 
-          error: "Maximum pageview limit reached"
-        })
-      end
-
-      it 'returns a 401 unauthorized status' do
-        get "/articles/#{Article.first.id}"
-        get "/articles/#{Article.first.id}"
-        get "/articles/#{Article.first.id}"
-        get "/articles/#{Article.first.id}"
-
-        expect(response).to have_http_status(:unauthorized)
-      end
-
-      it 'uses the session to keep track of the number of page views' do
-        get "/articles/#{Article.first.id}"
-        get "/articles/#{Article.first.id}"
-        get "/articles/#{Article.first.id}"
-        get "/articles/#{Article.first.id}"
-  
-        expect(session[:page_views]).to eq(4)
-      end
-    end
-  end
-end
+# end
